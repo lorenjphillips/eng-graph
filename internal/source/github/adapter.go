@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/eng-graph/eng-graph/internal/source"
@@ -59,13 +60,28 @@ func (a *Adapter) Validate() error {
 	return nil
 }
 
+func (a *Adapter) resolveToken() (string, error) {
+	if a.tokenEnv != "" {
+		if token := os.Getenv(a.tokenEnv); token != "" {
+			return token, nil
+		}
+	}
+	// Fall back to gh CLI.
+	if out, err := exec.Command("gh", "auth", "token").Output(); err == nil {
+		if token := strings.TrimSpace(string(out)); token != "" {
+			return token, nil
+		}
+	}
+	return "", fmt.Errorf("github: no token available (set %s or install gh CLI)", a.tokenEnv)
+}
+
 func (a *Adapter) TestConnection(ctx context.Context) error {
-	token := os.Getenv(a.tokenEnv)
-	if token == "" {
-		return fmt.Errorf("github: env var %s is not set", a.tokenEnv)
+	token, err := a.resolveToken()
+	if err != nil {
+		return err
 	}
 	a.client = NewClient(token)
-	_, err := a.client.GetAuthenticatedUser(ctx)
+	_, err = a.client.GetAuthenticatedUser(ctx)
 	if err != nil {
 		return fmt.Errorf("github: authentication failed: %w", err)
 	}
@@ -74,9 +90,9 @@ func (a *Adapter) TestConnection(ctx context.Context) error {
 
 func (a *Adapter) Ingest(ctx context.Context, opts source.IngestOptions, out chan<- source.DataPoint, progress chan<- source.IngestProgress) error {
 	if a.client == nil {
-		token := os.Getenv(a.tokenEnv)
-		if token == "" {
-			return fmt.Errorf("github: env var %s is not set", a.tokenEnv)
+		token, err := a.resolveToken()
+		if err != nil {
+			return err
 		}
 		a.client = NewClient(token)
 	}
