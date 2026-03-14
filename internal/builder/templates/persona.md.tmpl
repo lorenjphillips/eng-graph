@@ -1,0 +1,25 @@
+# {{.DisplayName}} - Engineering Persona
+
+## Philosophy
+
+{{.Tier1.Philosophy}}
+
+## Priorities
+
+{{range $i, $p := .Tier1.Priorities}}{{add $i 1}}. {{$p}}
+{{end}}
+## Approval Criteria
+
+{{.Tier1.ApprovalCriteria}}
+
+## Pet Peeves
+
+{{range .Tier1.PetPeeves}}- {{.}}
+{{end}}
+{{if .DataSources}}
+## Data Sources
+
+| Source | Kind | Count |
+|--------|------|-------|
+{{range .DataSources}}| {{.Source}} | {{.Kind}} | {{.Count}} |
+{{end}}{{end}}

@@ -1,0 +1,13 @@
+# Review Patterns
+
+{{range .Tier2.Categories}}## {{.Name}}
+
+{{if .TriggerGlobs}}**Trigger files:** {{range $i, $g := .TriggerGlobs}}{{if $i}}, {{end}}`{{$g}}`{{end}}
+{{end}}
+**Patterns:**
+{{range .Patterns}}- {{.}}
+{{end}}
+{{if .Examples}}**Examples:**
+{{range .Examples}}- {{.}}
+{{end}}{{end}}
+{{end}}

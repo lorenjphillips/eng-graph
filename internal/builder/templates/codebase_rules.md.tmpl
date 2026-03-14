@@ -1,0 +1,38 @@
+# Codebase Rules
+
+{{if .Tier3.Wrappers}}## Wrapper Rules
+
+{{range .Tier3.Wrappers}}- **{{.Rule}}**
+{{- if .Example}}
+  ```
+  {{.Example}}
+  ```
+{{end}}
+{{end}}{{end}}
+{{if .Tier3.BaseClasses}}## Base Class Rules
+
+{{range .Tier3.BaseClasses}}- **{{.Rule}}**
+{{- if .Example}}
+  ```
+  {{.Example}}
+  ```
+{{end}}
+{{end}}{{end}}
+{{if .Tier3.Naming}}## Naming Conventions
+
+{{range .Tier3.Naming}}- **{{.Rule}}**
+{{- if .Example}}
+  ```
+  {{.Example}}
+  ```
+{{end}}
+{{end}}{{end}}
+{{if .Tier3.Patterns}}## Code Patterns
+
+{{range .Tier3.Patterns}}- **{{.Rule}}**
+{{- if .Example}}
+  ```
+  {{.Example}}
+  ```
+{{end}}
+{{end}}{{end}}
