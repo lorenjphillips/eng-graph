@@ -3,6 +3,8 @@ package storage
 import (
 	"database/sql"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/eng-graph/eng-graph/internal/source"
@@ -15,6 +17,9 @@ type SQLiteStore struct {
 }
 
 func NewSQLiteStore(path string) (*SQLiteStore, error) {
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		return nil, err
+	}
 	db, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, err
