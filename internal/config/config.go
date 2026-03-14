@@ -13,15 +13,15 @@ const (
 )
 
 type Config struct {
-	LLM           LLMConfig      `yaml:"llm"`
+	LLM           LLMConfig      `yaml:"llm,omitempty"`
 	Sources       []SourceConfig `yaml:"sources"`
 	ActiveProfile string         `yaml:"active_profile,omitempty"`
 }
 
 type LLMConfig struct {
-	BaseURL   string `yaml:"base_url"`
-	APIKeyEnv string `yaml:"api_key_env"`
-	Model     string `yaml:"model"`
+	BaseURL   string `yaml:"base_url,omitempty"`
+	APIKeyEnv string `yaml:"api_key_env,omitempty"`
+	Model     string `yaml:"model,omitempty"`
 }
 
 type SourceConfig struct {
@@ -31,13 +31,7 @@ type SourceConfig struct {
 }
 
 func DefaultConfig() *Config {
-	return &Config{
-		LLM: LLMConfig{
-			BaseURL:   "https://api.openai.com/v1",
-			APIKeyEnv: "ENG_GRAPH_LLM_API_KEY",
-			Model:     "gpt-4o",
-		},
-	}
+	return &Config{}
 }
 
 func Init(dir string) error {

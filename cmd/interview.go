@@ -21,7 +21,8 @@ var interviewCmd = &cobra.Command{
 	Short: "Run an interactive interview to enrich a profile",
 	Long: `Run an AI-driven interview to capture engineering preferences.
 
-By default, opens a terminal UI. For non-interactive use (scripts, agents):
+Requires LLM configuration for TUI mode. For agent-driven interviews,
+use --batch mode where the calling agent asks questions directly.
 
   eng-graph interview myprofile --batch
   eng-graph interview myprofile --transcript answers.json`,
@@ -71,6 +72,10 @@ func runInterview(cmd *cobra.Command, args []string) error {
 		}
 		fmt.Printf("Imported transcript to %s\n", transcriptPath)
 		return nil
+	}
+
+	if cfg.LLM.APIKeyEnv == "" {
+		return fmt.Errorf("no LLM configured. Use --transcript to import interview answers, or let your AI agent conduct the interview conversationally")
 	}
 
 	client, err := llm.NewOpenAIClient(cfg.LLM)

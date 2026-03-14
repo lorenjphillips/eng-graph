@@ -18,9 +18,13 @@ import (
 
 var buildCmd = &cobra.Command{
 	Use:   "build <profile>",
-	Short: "Build a profile from ingested data",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runBuild,
+	Short: "Build a profile from ingested data using a local LLM",
+	Long: `Analyze ingested data and synthesize a tiered profile using an LLM.
+
+Requires LLM configuration in .eng-graph/config.yaml. Most users should
+use 'eng-graph dump' instead and let their AI agent analyze the data directly.`,
+	Args: cobra.ExactArgs(1),
+	RunE: runBuild,
 }
 
 var (
@@ -40,6 +44,10 @@ func runBuild(cmd *cobra.Command, args []string) error {
 	cfg, err := config.Load(dir)
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
+	}
+
+	if cfg.LLM.APIKeyEnv == "" {
+		return fmt.Errorf("no LLM configured. Use 'eng-graph dump %s' to export data for your AI agent to analyze directly", profileName)
 	}
 
 	store := profile.NewStore(dir)
@@ -63,7 +71,6 @@ func runBuild(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("no data points found for profile %q; run 'eng-graph ingest %s' first", profileName, profileName)
 	}
 
-	// Load interview transcript if available.
 	var transcript json.RawMessage
 	transcriptPath := filepath.Join(store.ProfileDir(profileName), "interview.json")
 	if data, err := os.ReadFile(transcriptPath); err == nil {

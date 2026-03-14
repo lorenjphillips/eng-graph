@@ -17,10 +17,16 @@ import (
 
 var reviewCmd = &cobra.Command{
 	Use:   "review <pr-ref>",
-	Short: "Review a PR using an engineer profile",
-	Long:  "Accepts a GitHub PR URL, owner/repo#number, or PR number (requires config for repo).",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runReview,
+	Short: "Review a PR using an engineer profile and a local LLM",
+	Long: `Review a PR in the voice of a profiled engineer using an LLM.
+
+Requires LLM configuration in .eng-graph/config.yaml. Most users should
+use 'eng-graph export' to load the profile into their AI agent and let
+the agent review PRs directly.
+
+Accepts a GitHub PR URL, owner/repo#number, or PR number.`,
+	Args: cobra.ExactArgs(1),
+	RunE: runReview,
 }
 
 var (
@@ -42,6 +48,10 @@ func runReview(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("loading config: %w", err)
 	}
 
+	if cfg.LLM.APIKeyEnv == "" {
+		return fmt.Errorf("no LLM configured. Use 'eng-graph export <profile>' and let your AI agent review PRs directly")
+	}
+
 	profileName := reviewProfile
 	if profileName == "" {
 		profileName = cfg.ActiveProfile
@@ -61,7 +71,6 @@ func runReview(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// For bare PR numbers, resolve owner/repo from first github source.
 	if owner == "" {
 		ghSources := cfg.SourceByKind("github")
 		if len(ghSources) == 0 {
@@ -79,7 +88,6 @@ func runReview(cmd *cobra.Command, args []string) error {
 		owner, repo = parts[0], parts[1]
 	}
 
-	// Resolve GitHub token from first github source.
 	tokenEnv := "GITHUB_TOKEN"
 	if ghSources := cfg.SourceByKind("github"); len(ghSources) > 0 {
 		if env, ok := ghSources[0].Config["token_env"].(string); ok {
