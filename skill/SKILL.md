@@ -87,19 +87,7 @@ Analyze ALL the data points yourself. Look for:
 6. **Communication style** — How do they phrase feedback?
 7. **Praise patterns** — What do they call out as good work?
 
-### Step 4: Interview (optional but recommended)
-
-Ask the user if they want to interview the engineer to fill gaps. If yes, conduct the interview conversationally. Ask about:
-
-1. What they value most in code review
-2. Their top 3 review priorities
-3. Common patterns they enforce
-4. What makes them approve vs request changes
-5. How they prefer to give feedback
-6. What their pet peeves are
-7. How they like to phrase praise and criticism
-
-### Step 5: Generate the profile
+### Step 4: Generate the profile
 
 Write four tiered markdown files:
 
